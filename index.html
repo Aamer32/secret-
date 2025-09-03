@@ -128,17 +128,19 @@
       <button id="go-chat">💬 انتقل إلى الدردشة</button>
     </div>
 
-    <!-- صفحة الدردشة -->
-    <div id="chat" class="chat">
-      <div id="chat-box"></div>
-      <div class="input-area">
-        <input type="text" id="message-input" placeholder="اكتب رسالتك هنا..." />
-        <button id="send-btn">إرسال</button>
-      </div>
-      <br>
-      <button id="go-books">⬅ عودة إلى الكتب</button>
-    </div>
+  <!-- صفحة الدردشة -->
+<div id="chat" class="chat">
+  <div id="chat-box"></div>
+  <div class="input-area">
+    <input type="text" id="message-input" placeholder="اكتب رسالتك هنا..." />
+    <button id="send-btn">إرسال</button>
   </div>
+  <br>
+  <button id="clear-chat">🗑 حذف جميع الرسائل</button>
+  <br><br>
+  <button id="go-books">⬅ عودة إلى الكتب</button>
+</div>
+
 
   <!-- نافذة الاسم -->
   <div id="nameModal" class="modal">
@@ -252,6 +254,16 @@
     localStorage.setItem("chatMessages", JSON.stringify(messages));
     renderMessages();
   }
+     const clearChatBtn = document.getElementById("clear-chat");
+
+  // حذف جميع الرسائل
+  clearChatBtn.addEventListener("click", () => {
+    if(confirm("هل تريد فعلاً حذف جميع الرسائل؟")) {
+      messages = [];
+      localStorage.removeItem("chatMessages");
+      renderMessages();
+    }
+  });
 
   // عرض الرسائل
   function renderMessages() {
@@ -287,4 +299,5 @@
     chatBox.scrollTop = chatBox.scrollHeight;
   }
 </script>
+
 
