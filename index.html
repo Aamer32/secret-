@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>📚 تطبيقي - مكتبة و دردشة</title>
+  <title>📚 تطبيقي - مكتبة </title>
   <style>
     body {
       font-family: "Tajawal", sans-serif;
@@ -52,12 +52,13 @@
       border-radius: 5px;
       margin: 5px 0;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      flex-direction: column;
+      align-items: flex-start;
     }
-    .message span { font-weight: bold; color: #2c3e50; }
+    .message span.user { font-weight: bold; color: #2c3e50; }
     .message.user1 { background: #c8e6c9; }
     .message.user2 { background: #fff9c4; }
+
     .delete-btn {
       background: red;
       color: white;
@@ -65,8 +66,16 @@
       border-radius: 5px;
       padding: 2px 6px;
       cursor: pointer;
+      margin-left: auto;
     }
     .delete-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .time {
+      font-size: 12px;
+      color: #555;
+      margin-top: 3px;
+      align-self: flex-end;
+    }
 
     .input-area {
       display: flex;
@@ -107,7 +116,7 @@
   </style>
 </head>
 <body>
-  <header>📚 تطبيقي - مكتبة و دردشة</header>
+  <header>📚 تطبيقي - مكتبة </header>
   <div class="container">
 
     <!-- صفحة الكتب -->
@@ -149,108 +158,133 @@
     </div>
   </div>
 
-  <script>
-    const booksSection = document.getElementById("books");
-    const chatSection = document.getElementById("chat");
-    const chatBox = document.getElementById("chat-box");
-    const input = document.getElementById("message-input");
+<script>
+  const booksSection = document.getElementById("books");
+  const chatSection = document.getElementById("chat");
+  const chatBox = document.getElementById("chat-box");
+  const input = document.getElementById("message-input");
 
-    const goChatBtn = document.getElementById("go-chat");
-    const goBooksBtn = document.getElementById("go-books");
-    const sendBtn = document.getElementById("send-btn");
+  const goChatBtn = document.getElementById("go-chat");
+  const goBooksBtn = document.getElementById("go-books");
+  const sendBtn = document.getElementById("send-btn");
 
-    const nameModal = document.getElementById("nameModal");
-    const saveNameBtn = document.getElementById("saveName");
-    const usernameInput = document.getElementById("username");
+  const nameModal = document.getElementById("nameModal");
+  const saveNameBtn = document.getElementById("saveName");
+  const usernameInput = document.getElementById("username");
 
-    const passwordModal = document.getElementById("passwordModal");
-    const checkPasswordBtn = document.getElementById("checkPassword");
-    const passwordInput = document.getElementById("passwordInput");
+  const passwordModal = document.getElementById("passwordModal");
+  const checkPasswordBtn = document.getElementById("checkPassword");
+  const passwordInput = document.getElementById("passwordInput");
 
-    let username = "";
-    let messages = JSON.parse(localStorage.getItem("chatMessages")) || [];
+  let username = "";
+  let messages = JSON.parse(localStorage.getItem("chatMessages")) || [];
 
-    // حفظ الاسم
-    saveNameBtn.addEventListener("click", () => {
-      username = usernameInput.value.trim();
-      if(username === "") {
-        alert("رجاءً اكتب اسمك");
-        return;
-      }
-      nameModal.style.display = "none";
-      booksSection.classList.add("active");
-    });
+  // حفظ الاسم
+  saveNameBtn.addEventListener("click", () => {
+    username = usernameInput.value.trim();
+    if(username === "") {
+      alert("رجاءً اكتب اسمك");
+      return;
+    }
+    nameModal.style.display = "none";
+    booksSection.classList.add("active");
+  });
 
-    // عند الضغط على "انتقل إلى الدردشة"
-    goChatBtn.addEventListener("click", () => {
-      passwordModal.style.display = "flex";
-    });
+  // عند الضغط على "انتقل إلى الدردشة"
+  goChatBtn.addEventListener("click", () => {
+    passwordModal.style.display = "flex";
+  });
 
-    // التحقق من كلمة السر
-    checkPasswordBtn.addEventListener("click", () => {
-      if(passwordInput.value.trim() === "hanah for me") {
-        passwordModal.style.display = "none";
-        booksSection.classList.remove("active");
-        chatSection.classList.add("active");
-        renderMessages();
-      } else {
-        alert("❌ كلمة السر غير صحيحة!");
-      }
-    });
-
-    // العودة للكتب
-    goBooksBtn.addEventListener("click", () => {
-      chatSection.classList.remove("active");
-      booksSection.classList.add("active");
-    });
-
-    // إرسال رسالة
-    function sendMessage() {
-      const text = input.value.trim();
-      if(text === "") return;
-      const newMessage = { user: username, text: text, id: Date.now() };
-      messages.push(newMessage);
-      localStorage.setItem("chatMessages", JSON.stringify(messages));
-      input.value = "";
+  // التحقق من كلمة السر
+  checkPasswordBtn.addEventListener("click", () => {
+    if(passwordInput.value.trim() === "hanah for me") {
+      passwordModal.style.display = "none";
+      booksSection.classList.remove("active");
+      chatSection.classList.add("active");
       renderMessages();
+    } else {
+      alert("❌ كلمة السر غير صحيحة!");
     }
-    sendBtn.addEventListener("click", sendMessage);
-    input.addEventListener("keypress", e => { if(e.key === "Enter") sendMessage(); });
+  });
 
-    // حذف رسالة
-    function deleteMessage(id) {
-      messages = messages.filter(msg => !(msg.id === id && msg.user === username));
-      localStorage.setItem("chatMessages", JSON.stringify(messages));
-      renderMessages();
-    }
+  // العودة للكتب
+  goBooksBtn.addEventListener("click", () => {
+    chatSection.classList.remove("active");
+    booksSection.classList.add("active");
+  });
 
-    // عرض الرسائل
-    function renderMessages() {
-      chatBox.innerHTML = "";
-      messages.forEach(msg => {
-        const div = document.createElement("div");
-        div.classList.add("message");
-        div.classList.add(msg.user === username ? "user1" : "user2");
+  // إرسال رسالة
+  function sendMessage() {
+    const text = input.value.trim();
+    if(text === "") return;
 
-        const spanUser = document.createElement("span");
-        spanUser.textContent = msg.user + ": ";
+    // صياغة التاريخ والوقت بالفرنسية
+    const now = new Date();
+    const options = {
+      weekday: 'long',
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    };
+    const dateTime = now.toLocaleDateString('fr-FR', options);
 
-        const spanText = document.createElement("span");
-        spanText.textContent = msg.text;
+    const newMessage = { 
+      user: username, 
+      text: text, 
+      id: Date.now(),
+      time: dateTime
+    };
 
-        const delBtn = document.createElement("button");
-        delBtn.textContent = "🗑";
-        delBtn.classList.add("delete-btn");
-        if(msg.user === username) delBtn.onclick = () => deleteMessage(msg.id);
-        else delBtn.disabled = true;
+    messages.push(newMessage);
+    localStorage.setItem("chatMessages", JSON.stringify(messages));
+    input.value = "";
+    renderMessages();
+  }
 
-        div.appendChild(spanUser);
-        div.appendChild(spanText);
-        div.appendChild(delBtn);
-        chatBox.appendChild(div);
-      });
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
-  </script>
-</body>
-</html>
+  sendBtn.addEventListener("click", sendMessage);
+  input.addEventListener("keypress", e => { if(e.key === "Enter") sendMessage(); });
+
+  // حذف رسالة
+  function deleteMessage(id) {
+    messages = messages.filter(msg => !(msg.id === id && msg.user === username));
+    localStorage.setItem("chatMessages", JSON.stringify(messages));
+    renderMessages();
+  }
+
+  // عرض الرسائل
+  function renderMessages() {
+    chatBox.innerHTML = "";
+    messages.forEach(msg => {
+      const div = document.createElement("div");
+      div.classList.add("message");
+      div.classList.add(msg.user === username ? "user1" : "user2");
+
+      const spanUser = document.createElement("span");
+      spanUser.textContent = msg.user + ": ";
+
+      const spanText = document.createElement("span");
+      spanText.textContent = msg.text + " ";
+
+      const spanTime = document.createElement("small");
+      spanTime.style.color = "#555";
+      spanTime.style.marginLeft = "10px";
+      spanTime.textContent = "(" + msg.time + ")";
+
+      const delBtn = document.createElement("button");
+      delBtn.textContent = "🗑";
+      delBtn.classList.add("delete-btn");
+      if(msg.user === username) delBtn.onclick = () => deleteMessage(msg.id);
+      else delBtn.disabled = true;
+
+      div.appendChild(spanUser);
+      div.appendChild(spanText);
+      div.appendChild(spanTime);
+      div.appendChild(delBtn);
+      chatBox.appendChild(div);
+    });
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+</script>
+
